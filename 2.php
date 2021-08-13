@@ -67,9 +67,9 @@
 
     // Exercício 3
 
-    $telefones = [ '08002223333', '25225430', '992533073', '2225205951', '(2224603', '+5522992533073', '22992533073'];
+    $telefones = [ '08002223333', '25225430', '992533073', '2225205951', '(2224603', '+5522992533073', '22992533073', '2225205951', '25225430'];
 
-    recebeArray($telefones);
+    // recebeArray($telefones);
 
     function recebeArray(&$telefones){
         foreach($telefones as $indice => $elemento){
@@ -80,10 +80,14 @@
 
 
     // Exercício 4
+    
+    $duplicates = verificaRepetido($telefones);
+    
+    print_r($duplicates);
 
     function verificaRepetido(&$telefones){
 
-        
+        return array_unique( array_diff_assoc( $telefones, array_unique( $telefones ) ) );
 
     }
 ?>
