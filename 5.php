@@ -23,7 +23,7 @@
 
 
     // Questão 5.b
-    $media = retornaMediaAnos($inventores);
+    //$media = retornaMediaAnos($inventores);
     function retornaMediaAnos ($array){
         $idade = [];
         foreach($array as $inventor){           
@@ -33,6 +33,36 @@
         return array_sum($idade) / count( $idade );
     }
 
+
     // Questão 5.c
-    
+    verificaSeculo($inventores,16);
+    function verificaSeculo ($array,$seculo){
+        
+        // Cria variáveis para o primeiro e último ano de um século
+        $finalSeculo = 100*$seculo;
+        $inicioSeculo = $finalSeculo-99;
+        
+
+        $contador = 0;
+        foreach($array as $inventor){           
+           $nascimento = $inventor['nasc'];
+           $morte = $inventor['morte'];
+           
+           for($j=$nascimento; $j<=$morte; $j++){
+                $arrayViveu [$contador]= [ 'nome' => $inventor['nome'], 'viveu' => $j];
+                $contador++;
+           }
+        }
+
+        $cont = 0;
+        for($i=$inicioSeculo; $i<=$finalSeculo; $i++){
+            $valorExiste = in_array( $i, $arrayViveu);
+            echo $i,$valorExiste,PHP_EOL;
+            // $arraySeculo [$cont]=$i;
+            // $cont++;
+        }
+
+
+        //var_dump($arrayViveu);
+    }
 ?>
