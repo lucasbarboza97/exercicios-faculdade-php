@@ -35,34 +35,39 @@
 
 
     // Questão 5.c
-    verificaSeculo($inventores,16);
+    // $inventoresViveuNoSeculo = verificaSeculo($inventores,17);
+    // var_dump($inventoresViveuNoSeculo);
     function verificaSeculo ($array,$seculo){
-        
         // Cria variáveis para o primeiro e último ano de um século
         $finalSeculo = 100*$seculo;
         $inicioSeculo = $finalSeculo-99;
-        
-
-        $contador = 0;
+        $cont = 0;      
         foreach($array as $inventor){           
-           $nascimento = $inventor['nasc'];
-           $morte = $inventor['morte'];
-           
-           for($j=$nascimento; $j<=$morte; $j++){
-                $arrayViveu [$contador]= [ 'nome' => $inventor['nome'], 'viveu' => $j];
-                $contador++;
-           }
+            $nascimento = $inventor['nasc'];
+            $morte = $inventor['morte'];
+            for($i=$nascimento;$i<=$morte;$i++){
+                for($j=$inicioSeculo;$j<=$finalSeculo;$j++){
+                    if($i==$j){
+                        $arrayViveu [$cont]= [$inventor['nome']];
+                        $cont++;
+                    }
+                }
+            }          
         }
+        $arrayViveu = array_unique($arrayViveu, SORT_REGULAR);
+        return $arrayViveu;
+    }
 
-        $cont = 0;
-        for($i=$inicioSeculo; $i<=$finalSeculo; $i++){
-            $valorExiste = in_array( $i, $arrayViveu);
-            echo $i,$valorExiste,PHP_EOL;
-            // $arraySeculo [$cont]=$i;
-            // $cont++;
+
+    //Questão 5.d
+    ordenaSobrenome($inventores);
+    function ordenaSobrenome($array){
+        $i = 0;
+        foreach($array as $inventor){           
+            $arraySemNome[$i] = [ 'sobrenome' => $inventor['sobrenome'], 'nasc' => $inventor['nasc'], 'morte' => $inventor['morte']];
+            $i++;
         }
-
-
-        //var_dump($arrayViveu);
+        sort($arraySemNome);
+        var_dump($arraySemNome);
     }
 ?>
