@@ -1,22 +1,23 @@
 <?php
-    class Pessoa{
-        public $nome;
-        public function setNome($nome){
-            $this->nome = $nome;
-        }
-        public function getNome(){
-            return $this->nome;
-        }
+class Funcionario {
+
+    private  $nome;
+    private  $cpf;
+    private  $salario;
+
+    public function calculaBonus() {
+        return $this->salario * 0.10;
     }
-    $pessoa = new Pessoa();
-    $pessoa->setNome("Fabio");
+}
 
-    $arrayObjetos[] = $pessoa;
-    
-    $pessoa = new Pessoa();
-    $pessoa->setNome("Maria");
+class Gerente extends Funcionario {
 
-    $arrayObjetos[] = $pessoa;
+    public function calculaBonus() {
+        return $this->salario * 0.20;
+    }
+}
 
-    var_dump($arrayObjetos);
+$gerente = new Gerente();
+$gerente->salario = 1000;
+echo $gerente->calculaBonus();
 ?>

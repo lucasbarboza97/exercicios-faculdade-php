@@ -1,12 +1,17 @@
 <?php
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// Classe carro
 class Carro{
         // modelo (texto), rpm (número de rotações por minuto), marcha (número), velocidadeEmKm (número) e ligado (que indica se o carro está ligado ou não).
-        private $modelo;
-        private $rpm = 0;
-        private $marcha = 0;
-        private $velocidadeEmKm = 0;
-        private $ligado = false;
+        protected $modelo;
+        protected $rpm = 0;
+        protected $marcha = 0;
+        protected $velocidadeEmKm = 0;
+        protected $ligado = false;
 
 
         // Construtor
@@ -105,41 +110,157 @@ class Carro{
     }
 
 
-    class Corrida{      
-        private $listaDeCarros;
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// Classe carro esportivo
+class CarroEsportivo extends Carro{
 
-        public function __construct( $listaDeCarros ) {
-            $this->listaDeCarros=$listaDeCarros;
+    // Funções
+    public function acelerar(){
+        if($this->rpm<=8000){
+            $this->rpm+=300;
         }
-
-
-        public function iniciar (){
-            echo "A corrida iniciou, esses são os modelos de carros competindo: ",PHP_EOL;
-            foreach($this->listaDeCarros as $carro){
-                $carro->ligar();
-                $carro->subirMarcha();
-                $carro->acelerar();      
-                echo $carro->getModelo(),PHP_EOL;  
-            }
-            for($rodada=1;$rodada<=100;$rodada++){
-                $carroAleatorio = array_rand ($this->listaDeCarros);
-                $this->listaDeCarros[$carroAleatorio]->acelerar;
-                var_dump($this->listaDeCarros);
-            }
+        if($this->marcha == -1){
+            $this->velocidadeEmKm+=20;
+        }
+        else if($this->marcha != 0){
+            $this->velocidadeEmKm+=20*$this->marcha;
         }
     }
 
+    public function desacelerar(){
+        if($this->rpm>=0){
+            $this->rpm-=300;
+        }
+        if($this->marcha == -1){
+            $this->velocidadeEmKm-=20;
+        }
+        else if($this->marcha != 0){
+            $this->velocidadeEmKm-=20*$this->marcha;
+        }
+    }
 
-    $uno = new Carro('UNO');
-    $celta = new Carro('Celta');
-    $corsa = new Carro('Corsa');
-    $hb20 = new Carro('HB20');
-    $chevette = new Carro('Chevette');
-    
-    $carros = [$uno,$celta,$corsa,$hb20,$chevette];
-    
-    $corridaDeCarros = new Corrida($carros);
-    $corridaDeCarros->iniciar();
+    public function subirMarcha(){
+        if($this->marcha <= 7){
+            $marcha = $this->marcha+1;
+            $this->passarMarcha($marcha);
+        }
+    }
+}
 
-    // var_dump($carros);
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// Classe corrida
+class Corrida{
+    
+    // Atributos
+    private $listaDeCarros;
+    private $colocacao;
+    private $velocidadeTotal = [0];
+
+    // Construtor
+    public function __construct( $listaDeCarros ) {
+        $this->listaDeCarros=$listaDeCarros;
+    }
+
+    // Funções
+    public function iniciar (){
+
+        // A corrida é iniciada
+        echo "A corrida iniciou, esses são os modelos de carros competindo: ",PHP_EOL;
+        foreach($this->listaDeCarros as $carro){
+            $carro->ligar();
+            $carro->subirMarcha();
+            $carro->acelerar();      
+            echo $carro->getModelo(),PHP_EOL;
+        }
+
+        // Rodadas da corrida
+        for($rodada=1;$rodada<=100;$rodada++){
+
+            // Rodada iniciada
+            echo PHP_EOL, PHP_EOL, PHP_EOL, "Rodada ", $rodada, PHP_EOL, PHP_EOL;
+            
+            $carroAleatorio100 = array_rand ($this->listaDeCarros);
+            $this->listaDeCarros[$carroAleatorio100]->acelerar();
+            echo $this->listaDeCarros[$carroAleatorio100]->getModelo(), " acelerou!", PHP_EOL;
+            
+            if($rodada % 2 == 0){
+                $carroAleatorio50 = array_rand ($this->listaDeCarros);    
+                // if($this->listaDeCarros[$carroAleatorio50]->getMarcha()<5)
+                try{
+                    $this->listaDeCarros[$carroAleatorio50]->subirMarcha();
+                    echo $this->listaDeCarros[$carroAleatorio50]->getModelo(), " subiu uma marcha!", PHP_EOL;
+                }catch(RuntimeException $re){
+                    echo $this->listaDeCarros[$carroAleatorio50]->getModelo(), " não teve sua marcha alterada! ", $re->getMessage(), PHP_EOL;
+                }
+            }
+
+            if($rodada % 4 == 0){
+                $carroAleatorio25 = array_rand ($this->listaDeCarros);
+                $this->listaDeCarros[$carroAleatorio25]->desacelerar();
+                echo $this->listaDeCarros[$carroAleatorio25]->getModelo(), " desacelerou!", PHP_EOL;
+            }
+
+            if($rodada % 10 == 0){
+                $carroAleatorio25 = array_rand ($this->listaDeCarros);
+                $this->listaDeCarros[$carroAleatorio25]->descerMarchar();
+                echo $this->listaDeCarros[$carroAleatorio25]->getModelo(), " diminuiu uma marcha!", PHP_EOL;
+            }
+            
+            /* Exibe a cada rodada, a velocidade que o carro está e acrescenta num array velocidade total 
+                para que seja contabilizado quem correu mais em KM e no final da corrida exibe o vencedor*/
+            $cont = 0;
+            foreach($this->listaDeCarros as $carroCorrida){
+                $this->velocidadeTotal[$cont] += $carroCorrida->getVelocidadeEmKm();
+                $this->colocacao [$cont] = ["Velocidade total" => $this->velocidadeTotal[$cont], "Modelo"=>$carroCorrida->getModelo()];
+                $cont++;
+                echo $carroCorrida->getModelo(), " esta com a velocidade de: ", $carroCorrida->getVelocidadeEmKm(), " KM. Na marcha: ", $carroCorrida->getMarcha(), ". Com o RPM de: ", $carroCorrida->getrpm(), PHP_EOL;
+            }
+            echo PHP_EOL, "Fim da rodada ", $rodada;
+        }
+
+        // Fim da corrida e exibe o vencedor
+        echo " e fim da corrida. ";
+        sort($this->colocacao);
+        foreach($this->colocacao as $teste){
+            $vencedor = $teste['Modelo'];
+        }
+        echo PHP_EOL,"O vencedor da corrida, é: ", $vencedor;
+    }
+}
+
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+// Corrida de carros normais.
+$uno = new Carro('UNO');
+$celta = new Carro('Celta');
+$corsa = new Carro('Corsa');
+$hb20 = new Carro('HB20');
+$chevette = new Carro('Chevette');
+$carros = [$uno,$celta,$corsa,$hb20,$chevette];
+$corridaDeCarros = new Corrida($carros);
+// $corridaDeCarros->iniciar();
+
+// Corrida de carros esportivos.
+$ferrari = new CarroEsportivo('Ferrari');
+$lamborghini = new CarroEsportivo('Lamborghini');
+$unoComEscada = new CarroEsportivo('Uno com escada');
+$porsche = new CarroEsportivo('Porsche');
+$lotus = new CarroEsportivo('Lotus');
+$carrosEsportivos = [$ferrari,$lamborghini,$unoComEscada,$porsche,$lotus];
+$corridaDeCarrosEsportivos = new Corrida($carrosEsportivos);
+$corridaDeCarrosEsportivos->iniciar();
 ?>
